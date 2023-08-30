@@ -10,11 +10,11 @@ const Register = async (req, res) => {
       full_name,
       date_of_birth,
       designation,
-      profile_picture,
       location,
       employeeId,
       department,
     } = req.body;
+    const filePath = req.file.path;
     const user = await Usermodel.findOne({ username });
     if (user) {
       return res.json({ message: "User already exists" });
@@ -26,7 +26,7 @@ const Register = async (req, res) => {
       full_name,
       date_of_birth,
       designation,
-      profile_picture,
+      profile_picture:filePath,
       location,
       employeeId,
       department,
