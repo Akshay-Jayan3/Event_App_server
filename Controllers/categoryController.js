@@ -9,7 +9,7 @@ const getAllcategories=async(req,res)=>{
 
         }
         else{
-            res.status(200).json(categories)
+            res.status(200).json({categories})
         }
     } catch (error) {
         res.status(500).json({ error: "An error occurred while fetching categories." });

@@ -11,14 +11,12 @@ import {
   addAttendees,
   removeAttendees,
   eventDetails,
-  eventsBycategory,
-  eventsToday
+  eventsToday,
 } from "../Controllers/EventController.js";
 const router = express.Router();
 
 router.get("/", getAllEvents);
 router.get("/eventDetails/:eventId", eventDetails);
-router.get("/Category/:category", eventsBycategory);
 router.get("/pastEvents", pastEvents);
 router.get("/upcomingEvents", upcomingEvents);
 router.get("/myEvents/:userId", myEvents);
