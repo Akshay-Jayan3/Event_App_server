@@ -160,7 +160,32 @@ const EventCount = async (req, res) => {
 };
 
 const addEvent = async (req, res) => {
-  const events = new EventModel(req.body);
+  const {
+    title,
+    location,
+    category,
+    startDate,
+    EndDate,
+    StartTime,
+    EndTime,
+    description,
+    attendees,
+    organizedBy
+  } = req.body;
+  const photoPaths = req.files.map(file => file.path);
+  const events = new EventModel({
+    title,
+    location,
+    category,
+    startDate,
+    EndDate,
+    StartTime,
+    EndTime,
+    description,
+    attendees,
+    organizedBy,
+    event_photos:photoPaths,
+  });
   try {
     await events.save();
     res.json({ message: "Event added succesfully" });
@@ -179,17 +204,17 @@ const editEvent = async (req, res) => {
     const {
       title,
       location,
+      category,
       startDate,
       EndDate,
       StartTime,
       EndTime,
       description,
     } = req.body;
-    console.log(eventId)
-    console.log(title)
     await EventModel.findByIdAndUpdate(eventId, {
       title,
       location,
+      category,
       startDate,
       EndDate,
       StartTime,
