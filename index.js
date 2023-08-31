@@ -35,6 +35,6 @@ app.use(
 
 app.use(express.json());
 app.use("/auth", userRouter);
-app.use("/event", eventRouter);
+app.use("/events", eventRouter);
 app.use("/birthdays", birthdayRouter);
 app.use("/categories", categoryRouter);

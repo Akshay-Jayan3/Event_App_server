@@ -111,7 +111,7 @@ const getAllusers = async (req, res) => {
     if (users.length === 0) {
       res.status(404).json({ message: "No people found" });
     } else {
-      res.status(200).json(users);
+      res.status(200).json({users});
     }
   } catch (error) {
     console.error(error);
