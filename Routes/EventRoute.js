@@ -1,4 +1,5 @@
 import express from "express";
+import {eventPhotoUpload} from "../Utils/Upload.js";
 import {
   addEvent,
   getAllEvents,
@@ -23,7 +24,7 @@ router.get("/upcomingEvents", upcomingEvents);
 router.get("/myEvents/:userId", myEvents);
 router.get("/count", EventCount);
 router.get("/today", eventsToday);
-router.post("/create", addEvent);
+router.post("/create",eventPhotoUpload.array('event_photos'), addEvent);
 router.put("/update/:eventId", editEvent);
 router.put("/addattendees/:eventId", addAttendees);
 router.put("/removeattendees/:eventId", removeAttendees);

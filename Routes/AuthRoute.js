@@ -5,7 +5,7 @@ import { Register,Login,editProfile ,getAllusers} from "../Controllers/AuthContr
 const router= express.Router()
 router.post("/signup",profilePictureUpload.single('profile_picture'),Register);
 router.post("/login", Login);
-router.put("/edit/:userId",profilePictureUpload.single('profilePicture'), editProfile);
+router.put("/edit/:userId",profilePictureUpload.single('profile_picture'), editProfile);
 router.get("/users",getAllusers)
 
 export {router as userRouter}
