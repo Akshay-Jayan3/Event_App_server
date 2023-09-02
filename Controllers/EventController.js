@@ -7,7 +7,7 @@ const getAllEvents = async (req, res) => {
       .populate("attendees", "username")
       .exec();
     if (events.length === 0) {
-      res.status(404).json({ message: "No events found." });
+      res.status(200).json({ message: "No events found.",events });
     } else {
       res.status(200).json({events});
     }
@@ -24,7 +24,7 @@ const eventDetails = async (req, res) => {
       .populate("attendees", "username")
       .exec();
     if (events.length === 0) {
-      res.status(404).json({ message: "No events found." });
+      res.status(200).json({ message: "No events found.",events });
     } else {
       res.status(200).json(events);
     }
@@ -51,7 +51,7 @@ const eventsToday = async (req, res) => {
       .populate("attendees", "username")
       .exec();
     if (events.length === 0) {
-      res.status(404).json({ message: "No events found for today." });
+      res.status(200).json({ message: "No events found for today.",events });
     } else {
       res.status(200).json({events});
     }
@@ -85,7 +85,7 @@ const pastEvents = async (req, res) => {
       .exec();
 
     if (pastEvents.length === 0) {
-      res.status(404).json({ message: "No past events found." });
+      res.status(200).json({ message: "No past events found." ,pastEvents});
     } else {
       res.status(200).json({pastEvents});
     }
@@ -118,7 +118,7 @@ const upcomingEvents = async (req, res) => {
       .exec();
 
     if (upcomingEvents.length === 0) {
-      res.status(404).json({ message: "No upcoming events found." ,upcomingEvents});
+      res.status(200).json({ message: "No upcoming events found." ,upcomingEvents});
     } else {
       res.status(200).json({upcomingEvents});
     }
@@ -138,7 +138,7 @@ const myEvents = async (req, res) => {
       .exec();
 
     if (myEvents.length === 0) {
-      res.status(404).json({ message: "No personal events found." });
+      res.status(200).json({ message: "No personal events found.",myEvents });
     } else {
       res.status(200).json({myEvents});
     }
@@ -197,7 +197,7 @@ const addEvent = async (req, res) => {
   });
   try {
     await events.save();
-    res.json({ message: "Event added succesfully" });
+    res.status(200).json({ message: "Event added succesfully" });
   } catch (error) {
     res.json(error);
     console.error("Error creating event:", error);
@@ -231,7 +231,7 @@ const editEvent = async (req, res) => {
       description,
     });
 
-    res.json({ message: "Event edited successfully" });
+    res.status(200).json({ message: "Event edited successfully" });
   } catch (error) {
     console.error(error);
     res
@@ -249,7 +249,7 @@ const addAttendees = async (req, res) => {
       { $addToSet: { attendees: { $each: attendees } } },
       { new: true }
     );
-    res.json({ message: "Attendees added successfully" });
+    res.status(200).json({ message: "Attendees added successfully" });
   } catch (error) {
     console.error(error);
     res
@@ -266,7 +266,7 @@ const removeAttendees = async (req, res) => {
       { $pull: { attendees: { $in: attendees } } },
       { new: true }
     );
-    res.json({ message: "Attendees removed successfully" });
+    res.status(200).json({ message: "Attendees removed successfully" });
   } catch (error) {
     console.error(error);
     res

@@ -32,7 +32,7 @@ const Register = async (req, res) => {
       department,
     });
     await newUser.save();
-    res.json({ message: "User created successfully" });
+    res.status(200).json({ message: "User created successfully" });
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ error: "An error occurred during registration." });
@@ -43,7 +43,7 @@ const Login = async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
       return res
-        .status(400)
+        .status(401)
         .json({ message: "Username and password are required" });
     }
     const user = await Usermodel.findOne({ username });
@@ -56,7 +56,7 @@ const Login = async (req, res) => {
       return res.json({ message: "username or password is incorrect" });
     }
     const token = jwt.sign({ id: user._id }, "secret");
-    res.json({
+    res.status(200).json({
       token,
       userid: user._id,
       userDetails: {
@@ -95,7 +95,7 @@ const editProfile = async (req, res) => {
       profile_picture,
     });
 
-    res.json({ message: "Profile picture uploaded successfully" });
+    res.status(200).json({ message: "Profile picture uploaded successfully" });
   } catch (error) {
     console.error(error);
     res
@@ -105,11 +105,16 @@ const editProfile = async (req, res) => {
 };
 
 const getAllusers = async (req, res) => {
+  const searchTerm = req.query.search;
+  const query = {};
+  if (searchTerm) {
+    query.full_name = { $regex: searchTerm, $options: "i" };
+  }
   try {
-    const users = await Usermodel.find({}, { full_name: 1 });
+    const users = await Usermodel.find(query, { full_name: 1 });
 
     if (users.length === 0) {
-      res.status(404).json({ message: "No people found" });
+      res.status(200).json({ message: "No people found" ,users});
     } else {
       res.status(200).json({users});
     }
