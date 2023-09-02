@@ -7,9 +7,9 @@ const getAllEvents = async (req, res) => {
       .populate("attendees", "username")
       .exec();
     if (events.length === 0) {
-      res.status(404).json({ message: "No events found." });
+      res.status(200).json({ message: "No events found.",events });
     } else {
-      res.status(200).json(events);
+      res.status(200).json({events});
     }
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching events." });
@@ -24,7 +24,7 @@ const eventDetails = async (req, res) => {
       .populate("attendees", "username")
       .exec();
     if (events.length === 0) {
-      res.status(404).json({ message: "No events found." });
+      res.status(200).json({ message: "No events found.",events });
     } else {
       res.status(200).json(events);
     }
@@ -43,17 +43,17 @@ const eventsToday = async (req, res) => {
       $and: [
         {
           startDate: { $lte: selectedDate },
-          EndDate: { $gte: selectedDate } 
-        }
-      ]
+          EndDate: { $gte: selectedDate },
+        },
+      ],
     })
       .populate("organizedBy", "username")
       .populate("attendees", "username")
       .exec();
     if (events.length === 0) {
-      res.status(404).json({ message: "No events found for today." });
+      res.status(200).json({ message: "No events found for today.",events });
     } else {
-      res.status(200).json(events);
+      res.status(200).json({events});
     }
   } catch (error) {
     res
@@ -61,35 +61,33 @@ const eventsToday = async (req, res) => {
       .json({ error: "An error occurred while fetching event data." });
   }
 };
-const eventsBycategory = async (req, res) => {
-  try {
-    const category = req.params.category;
-    const events = await EventModel.find({ category })
-      .populate("organizedBy", "username")
-      .populate("attendees", "username")
-      .exec();
-
-    if (events.length === 0) {
-      res.status(404).json({ message: "No events found ." });
-    } else {
-      res.status(200).json(events);
-    }
-  } catch (error) {
-    res.status(500).json({ error: "An error occurred while fetching events." });
-  }
-};
+//past events with search and filter by category
 const pastEvents = async (req, res) => {
+  const searchTerm = req.query.search;
+  const categoryFilter = req.query.category;
+
+  const query = {
+    EndDate: { $lt: new Date() },
+  };
+
+  if (searchTerm) {
+    query.title = { $regex: searchTerm, $options: "i" };
+  }
+
+  if (categoryFilter) {
+    query.category ={ $regex: categoryFilter, $options: "i" };
+  }
+
   try {
-    const currentDate = new Date();
-    const pastEvents = await EventModel.find({ EndDate: { $lt: currentDate } })
+    const pastEvents = await EventModel.find(query)
       .populate("organizedBy", "username")
       .populate("attendees", "username")
       .exec();
 
     if (pastEvents.length === 0) {
-      res.status(404).json({ message: "No past events found." });
+      res.status(200).json({ message: "No past events found." ,pastEvents});
     } else {
-      res.status(200).json(pastEvents);
+      res.status(200).json({pastEvents});
     }
   } catch (error) {
     res
@@ -97,21 +95,32 @@ const pastEvents = async (req, res) => {
       .json({ error: "An error occurred while fetching past events." });
   }
 };
+//upcoming events with search and filter by category
+const upcomingEvents = async (req, res) => { 
+  const searchTerm = req.query.search;
+  const categoryFilter = req.query.category;
 
-const upcomingEvents = async (req, res) => {
+  const query = {
+    EndDate: { $gte: new Date() },
+  };
+
+  if (searchTerm) {
+    query.title = { $regex: searchTerm, $options: "i" };
+  }
+
+  if (categoryFilter) {
+    query.category ={ $regex: categoryFilter, $options: "i" };
+  }
   try {
-    const currentDate = new Date();
-    const upcomingEvents = await EventModel.find({
-      startDate: { $gte: currentDate },
-    })
+    const upcomingEvents = await EventModel.find(query)
       .populate("organizedBy", "username")
       .populate("attendees", "username")
       .exec();
 
     if (upcomingEvents.length === 0) {
-      res.status(404).json({ message: "No upcoming events found." });
+      res.status(200).json({ message: "No upcoming events found." ,upcomingEvents});
     } else {
-      res.status(200).json(upcomingEvents);
+      res.status(200).json({upcomingEvents});
     }
   } catch (error) {
     res
@@ -129,9 +138,9 @@ const myEvents = async (req, res) => {
       .exec();
 
     if (myEvents.length === 0) {
-      res.status(404).json({ message: "No personal events found." });
+      res.status(200).json({ message: "No personal events found.",myEvents });
     } else {
-      res.status(200).json(myEvents);
+      res.status(200).json({myEvents});
     }
   } catch (error) {
     res
@@ -170,9 +179,9 @@ const addEvent = async (req, res) => {
     EndTime,
     description,
     attendees,
-    organizedBy
+    organizedBy,
   } = req.body;
-  const photoPaths = req.files.map(file => file.path);
+  const photoPaths = req.files.map((file) => file.path);
   const events = new EventModel({
     title,
     location,
@@ -184,11 +193,11 @@ const addEvent = async (req, res) => {
     description,
     attendees,
     organizedBy,
-    event_photos:photoPaths,
+    event_photos: photoPaths,
   });
   try {
     await events.save();
-    res.json({ message: "Event added succesfully" });
+    res.status(200).json({ message: "Event added succesfully" });
   } catch (error) {
     res.json(error);
     console.error("Error creating event:", error);
@@ -222,7 +231,7 @@ const editEvent = async (req, res) => {
       description,
     });
 
-    res.json({ message: "Event edited successfully" });
+    res.status(200).json({ message: "Event edited successfully" });
   } catch (error) {
     console.error(error);
     res
@@ -240,7 +249,7 @@ const addAttendees = async (req, res) => {
       { $addToSet: { attendees: { $each: attendees } } },
       { new: true }
     );
-    res.json({ message: "Attendees added successfully" });
+    res.status(200).json({ message: "Attendees added successfully" });
   } catch (error) {
     console.error(error);
     res
@@ -257,7 +266,7 @@ const removeAttendees = async (req, res) => {
       { $pull: { attendees: { $in: attendees } } },
       { new: true }
     );
-    res.json({ message: "Attendees removed successfully" });
+    res.status(200).json({ message: "Attendees removed successfully" });
   } catch (error) {
     console.error(error);
     res
@@ -278,5 +287,4 @@ export {
   EventCount,
   addAttendees,
   removeAttendees,
-  eventsBycategory,
 };
