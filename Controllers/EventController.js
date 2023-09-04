@@ -181,7 +181,7 @@ const addEvent = async (req, res) => {
     attendees,
     organizedBy,
   } = req.body;
-  const photoPaths = req.files.map((file) => file.path);
+  const photoPaths = req.files?.map((file) => file.path);
   const events = new EventModel({
     title,
     location,
