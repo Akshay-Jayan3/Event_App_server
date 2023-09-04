@@ -1,4 +1,5 @@
 import express from "express";
+import { VerifyToken } from "../Middlewares/authentication.js";
 import {eventPhotoUpload} from "../Utils/Upload.js";
 import {
   addEvent,
@@ -15,7 +16,7 @@ import {
 } from "../Controllers/EventController.js";
 const router = express.Router();
 
-router.get("/", getAllEvents);
+router.get("/", VerifyToken, getAllEvents);
 router.get("/eventDetails/:eventId", eventDetails);
 router.get("/pastEvents", pastEvents);
 router.get("/upcomingEvents", upcomingEvents);
