@@ -56,7 +56,7 @@ const Login = async (req, res) => {
       return res.json({ message: "username or password is incorrect" });
     }
     const token = jwt.sign({ id: user._id }, "secret");
-    res.status(200).json({
+    res.status(200).json({message:"Login successfull",
       token,
       userid: user._id,
       userDetails: {
@@ -123,5 +123,19 @@ const getAllusers = async (req, res) => {
     res.status(500).json({ error: "An error occurred while fetching people" });
   }
 };
+const getAUser = async (req, res) => {
+  const userId  =req.params.userId
+  try {
+    const users = await Usermodel.findById(userId);
 
-export { Register, Login, editProfile, getAllusers };
+    if (users.length === 0) {
+      res.status(200).json({ message: "No people found" ,users});
+    } else {
+      res.status(200).json({users});
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while fetching people" });
+  }
+};
+export { Register, Login, editProfile, getAllusers,getAUser };
