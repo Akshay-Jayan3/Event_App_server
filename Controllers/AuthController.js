@@ -58,7 +58,7 @@ const Login = async (req, res) => {
     const token = jwt.sign({ id: user._id }, "secret");
     res.status(200).json({message:"Login successfull",
       token,
-      userid: user._id,
+      userId: user._id,
       userDetails: {
         employeeId: user.employeeId,
         full_name: user.full_name,
@@ -126,12 +126,12 @@ const getAllusers = async (req, res) => {
 const getAUser = async (req, res) => {
   const userId  =req.params.userId
   try {
-    const users = await Usermodel.findById(userId);
+    const user = await Usermodel.findById(userId,{password:0});
 
-    if (users.length === 0) {
-      res.status(200).json({ message: "No people found" ,users});
+    if (user.length === 0) {
+      res.status(200).json({ message: "No people found" ,user});
     } else {
-      res.status(200).json({users});
+      res.status(200).json({user});
     }
   } catch (error) {
     console.error(error);
