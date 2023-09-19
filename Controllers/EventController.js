@@ -152,12 +152,21 @@ const myEvents = async (req, res) => {
 const EventCount = async (req, res) => {
   try {
     const currentDate = new Date();
+    const events = await EventModel.find({
+      $and: [
+        {
+          startDate: { $lte: currentDate },
+          EndDate: { $gte: currentDate },
+        },
+      ],
+    })
     const pastEvents = await EventModel.find({ EndDate: { $lt: currentDate } });
     const upcomingEvents = await EventModel.find({
       startDate: { $gte: currentDate },
     });
 
     res.status(200).json({
+      totalEvents:events.length,
       pastEventCount: pastEvents.length,
       upcomingEventCount: upcomingEvents.length,
     });

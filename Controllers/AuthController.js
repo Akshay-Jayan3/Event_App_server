@@ -111,7 +111,7 @@ const getAllusers = async (req, res) => {
     query.full_name = { $regex: searchTerm, $options: "i" };
   }
   try {
-    const users = await Usermodel.find(query, { full_name: 1 });
+    const users = await Usermodel.find(query, { password: 0 });
 
     if (users.length === 0) {
       res.status(200).json({ message: "No people found" ,users});
