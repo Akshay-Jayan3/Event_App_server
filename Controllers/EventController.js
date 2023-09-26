@@ -3,13 +3,14 @@ import { EventModel } from "../Models/EventModel.js";
 const getAllEvents = async (req, res) => {
   try {
     const events = await EventModel.find()
-      .populate("organizedBy", "username")
-      .populate("attendees", "username")
+      .populate("organizedBy", "full_name")
+      .populate("attendees", "full_name")
+      .populate("category", {})
       .exec();
     if (events.length === 0) {
-      res.status(200).json({ message: "No events found.",events });
+      res.status(200).json({ message: "No events found.", events });
     } else {
-      res.status(200).json({events});
+      res.status(200).json({ events });
     }
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching events." });
@@ -20,11 +21,12 @@ const eventDetails = async (req, res) => {
   try {
     const eventId = req.params.eventId;
     const events = await EventModel.findById(eventId)
-      .populate("organizedBy", "username")
-      .populate("attendees", "username")
+      .populate("organizedBy", "full_name")
+      .populate("attendees", "full_name")
+      .populate("category", {})
       .exec();
     if (events.length === 0) {
-      res.status(200).json({ message: "No events found.",events });
+      res.status(200).json({ message: "No events found.", events });
     } else {
       res.status(200).json(events);
     }
@@ -47,13 +49,14 @@ const eventsToday = async (req, res) => {
         },
       ],
     })
-      .populate("organizedBy", "username")
-      .populate("attendees", "username")
+      .populate("organizedBy", "full_name")
+      .populate("attendees", "full_name")
+      .populate("category", {})
       .exec();
     if (events.length === 0) {
-      res.status(200).json({ message: "No events found for today.",events });
+      res.status(200).json({ message: "No events found for today.", events });
     } else {
-      res.status(200).json({events});
+      res.status(200).json({ events });
     }
   } catch (error) {
     res
@@ -75,19 +78,20 @@ const pastEvents = async (req, res) => {
   }
 
   if (categoryFilter) {
-    query.category ={ $regex: categoryFilter, $options: "i" };
+    query.category = { $regex: categoryFilter, $options: "i" };
   }
 
   try {
     const pastEvents = await EventModel.find(query)
-      .populate("organizedBy", "username")
-      .populate("attendees", "username")
+      .populate("organizedBy", "full_name")
+      .populate("attendees", "full_name")
+      .populate("category", {})
       .exec();
 
     if (pastEvents.length === 0) {
-      res.status(200).json({ message: "No past events found." ,pastEvents});
+      res.status(200).json({ message: "No past events found.", pastEvents });
     } else {
-      res.status(200).json({pastEvents});
+      res.status(200).json({ pastEvents });
     }
   } catch (error) {
     res
@@ -96,7 +100,7 @@ const pastEvents = async (req, res) => {
   }
 };
 //upcoming events with search and filter by category
-const upcomingEvents = async (req, res) => { 
+const upcomingEvents = async (req, res) => {
   const searchTerm = req.query.search;
   const categoryFilter = req.query.category;
 
@@ -109,18 +113,21 @@ const upcomingEvents = async (req, res) => {
   }
 
   if (categoryFilter) {
-    query.category ={ $regex: categoryFilter, $options: "i" };
+    query.category = { $regex: categoryFilter, $options: "i" };
   }
   try {
     const upcomingEvents = await EventModel.find(query)
-      .populate("organizedBy", "username")
-      .populate("attendees", "username")
+      .populate("organizedBy", "full_name")
+      .populate("attendees", "full_name")
+      .populate("category", {})
       .exec();
 
     if (upcomingEvents.length === 0) {
-      res.status(200).json({ message: "No upcoming events found." ,upcomingEvents});
+      res
+        .status(200)
+        .json({ message: "No upcoming events found.", upcomingEvents });
     } else {
-      res.status(200).json({upcomingEvents});
+      res.status(200).json({ upcomingEvents });
     }
   } catch (error) {
     res
@@ -133,14 +140,15 @@ const myEvents = async (req, res) => {
   try {
     const userId = req.params.userId;
     const myEvents = await EventModel.find({ organizedBy: userId })
-      .populate("organizedBy", "username")
-      .populate("attendees", "username")
+      .populate("organizedBy", "full_name")
+      .populate("attendees", "full_name")
+      .populate("category", {})
       .exec();
 
     if (myEvents.length === 0) {
-      res.status(200).json({ message: "No personal events found.",myEvents });
+      res.status(200).json({ message: "No personal events found.", myEvents });
     } else {
-      res.status(200).json({myEvents});
+      res.status(200).json({ myEvents });
     }
   } catch (error) {
     res
@@ -159,14 +167,14 @@ const EventCount = async (req, res) => {
           EndDate: { $gte: currentDate },
         },
       ],
-    })
+    });
     const pastEvents = await EventModel.find({ EndDate: { $lt: currentDate } });
     const upcomingEvents = await EventModel.find({
       startDate: { $gte: currentDate },
     });
 
     res.status(200).json({
-      totalEvents:events.length,
+      totalEvents: events.length,
       pastEventCount: pastEvents.length,
       upcomingEventCount: upcomingEvents.length,
     });

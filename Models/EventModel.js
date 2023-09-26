@@ -9,19 +9,20 @@ const eventSchema = new mongoose.Schema({
     type: String,
   },
   category: {
-    type: String,
-    required: [true, "Category is required"],
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "categories",
+    // required: [true, "Organizer is required"],
   },
   startDate: {
     type: Date,
-    index: true
+    index: true,
   },
   EndDate: {
     type: Date,
-    index: true
+    index: true,
   },
   StartTime: {
-    type: String,   
+    type: String,
     // required: [true, "Start time is required"],
   },
   EndTime: {

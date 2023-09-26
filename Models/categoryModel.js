@@ -1,8 +1,14 @@
 import mongoose from "mongoose";
 
 const categorySchema =new mongoose.Schema({
-    category:{
+    label:{
         type:String,
-    }
+    },
+    mainColor: {
+        type: String,
+      },
+    subColor: {
+    type: String,
+    },
 })
-export const Categorymodel = mongoose.model("category",categorySchema)
+export const Categorymodel = mongoose.model("categories",categorySchema)
