@@ -23,8 +23,8 @@ router.get("/upcomingEvents", upcomingEvents);
 router.get("/myEvents/:userId", myEvents);
 router.get("/count", EventCount);
 router.get("/today", eventsToday);
-router.post("/create",eventPhotoUpload.array('event_photos'), addEvent);
-router.put("/update/:eventId", editEvent);
+router.post("/create",eventPhotoUpload.single('event_photos'), addEvent);
+router.put("/update/:eventId",eventPhotoUpload.single('event_photos'), editEvent);
 router.put("/addattendees/:eventId", addAttendees);
 router.put("/removeattendees/:eventId", removeAttendees);
 

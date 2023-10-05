@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import multer from "multer";
 import { userRouter } from "./Routes/AuthRoute.js";
 import { birthdayRouter } from "./Routes/upcomingbirthdayRoute.js";
 import { eventRouter } from "./Routes/EventRoute.js";
@@ -38,3 +39,12 @@ app.use("/auth", userRouter);
 app.use("/events", eventRouter);
 app.use("/birthdays", birthdayRouter);
 app.use("/categories", categoryRouter);
+app.use((err, req, res, next) => {
+  console.log(err)
+  if (err instanceof multer.MulterError) {
+    res.status(400).json({ error: 'File upload error: ' + err.message });
+  } else {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+

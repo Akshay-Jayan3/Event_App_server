@@ -23,6 +23,17 @@ const createMulterInstance = (destinationFunction, filenameFunction) => {
       destination: destinationFunction,
       filename: filenameFunction,
     }),
+    fileFilter: (req, file, cb) => {
+      const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true); 
+      } else {
+        cb(new Error('Invalid file type. Only JPEG, PNG, and GIF images are allowed.'));
+      }
+    },
+    limits: {
+      fileSize: 1024 * 1024 * 5, 
+    },
   });
 };
 

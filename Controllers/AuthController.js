@@ -60,6 +60,7 @@ const Login = async (req, res) => {
       token,
       userId: user._id,
       userDetails: {
+        id:user._id,
         employeeId: user.employeeId,
         full_name: user.full_name,
         date_of_birth: user.date_of_birth,
@@ -67,6 +68,7 @@ const Login = async (req, res) => {
         designation: user.designation,
         profile_picture: user.profile_picture,
         department: user.department,
+        email:user.email
       },
     });
   } catch (error) {
@@ -107,7 +109,7 @@ const editProfile = async (req, res) => {
 const getAllusers = async (req, res) => {
   const searchTerm = req.query.search;
   const query = {};
-  if (searchTerm) {
+  if (searchTerm !=='') {
     query.full_name = { $regex: searchTerm, $options: "i" };
   }
   try {

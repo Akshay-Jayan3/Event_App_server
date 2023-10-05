@@ -1,4 +1,5 @@
 import { EventModel } from "../Models/EventModel.js";
+import * as fs from 'fs';
 
 const getAllEvents = async (req, res) => {
   try {
@@ -68,9 +69,10 @@ const eventsToday = async (req, res) => {
 const pastEvents = async (req, res) => {
   const searchTerm = req.query.search;
   const categoryFilter = req.query.category;
+  const currentDate=  new Date().setHours(0, 0, 0, 0)
 
   const query = {
-    EndDate: { $lt: new Date() },
+    EndDate: { $lt: currentDate },
   };
 
   if (searchTerm) {
@@ -103,9 +105,10 @@ const pastEvents = async (req, res) => {
 const upcomingEvents = async (req, res) => {
   const searchTerm = req.query.search;
   const categoryFilter = req.query.category;
+  const currentDate=  new Date().setHours(0, 0, 0, 0)
 
   const query = {
-    EndDate: { $gte: new Date() },
+    EndDate: { $gte: currentDate },
   };
 
   if (searchTerm) {
@@ -198,7 +201,9 @@ const addEvent = async (req, res) => {
     attendees,
     organizedBy,
   } = req.body;
-  const photoPaths = req.files?.map((file) => file.path);
+  const fileDetails = {filepath:req.file.path,name:req.file.originalname};
+  let filePath;
+
   const events = new EventModel({
     title,
     location,
@@ -208,14 +213,25 @@ const addEvent = async (req, res) => {
     StartTime,
     EndTime,
     description,
-    attendees,
+    attendees:attendees ? attendees : [],
     organizedBy,
-    event_photos: photoPaths,
+    event_photos:fileDetails,
   });
   try {
     await events.save();
     res.status(200).json({ message: "Event added succesfully" });
   } catch (error) {
+    if (req.file) {
+      filePath = req.file.path;
+
+      // Attempt to delete the file
+      try {
+        fs.unlinkSync(filePath);
+        console.log(`File ${filePath} deleted successfully.`);
+      } catch (err) {
+        console.error(`Error deleting file ${filePath}:`, err);
+      }
+    }
     res.json(error);
     console.error("Error creating event:", error);
     res
@@ -236,7 +252,9 @@ const editEvent = async (req, res) => {
       StartTime,
       EndTime,
       description,
+      attendees
     } = req.body;
+    const fileDetails = {filepath:req.file.path,name:req.file.originalname};
     await EventModel.findByIdAndUpdate(eventId, {
       title,
       location,
@@ -246,6 +264,9 @@ const editEvent = async (req, res) => {
       StartTime,
       EndTime,
       description,
+      attendees:attendees ? attendees : [],
+      event_photos:fileDetails,
+
     });
 
     res.status(200).json({ message: "Event edited successfully" });

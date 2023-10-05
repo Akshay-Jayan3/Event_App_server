@@ -30,6 +30,9 @@ const userSchema = new mongoose.Schema({
   },
   department:{
     type:String
+  },
+  email:{
+    type:String
   }
 });
 

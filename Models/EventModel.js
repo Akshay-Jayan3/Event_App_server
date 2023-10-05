@@ -32,7 +32,7 @@ const eventSchema = new mongoose.Schema({
     type: String,
     // required: [true, "Description is required"],
   },
-  event_photos: [{ type: String }],
+  event_photos: [{ filepath: { type: String }, name: { type: String } }],
   createdAt: {
     type: Date,
     default: new Date(),
@@ -41,6 +41,7 @@ const eventSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
+      default: []
     },
   ],
   organizedBy: {
